@@ -16,6 +16,12 @@ meshbluConfig = new MeshbluConfig().toJSON()
 
 PORT  = process.env.PORT || 80
 
+passport.serializeUser (user, done) ->
+  done null, JSON.stringify user
+
+passport.deserializeUser (id, done) ->
+  done err, JSON.parse id
+
 app = express()
 app.use cors()
 app.use morgan('combined')
@@ -53,7 +59,7 @@ app.get '/api/authorize', passport.authenticate('estimote-cloud')
 app.get '/api/callback', passport.authenticate('estimote-cloud')
 app.get '/', passport.authenticate('octoblu')
 app.get '/api/octoblu/callback', passport.authenticate('octoblu'), (req, res) ->
-  res.redirect 'http://google.com'
+  res.redirect '/api/authorize'
 
 server = app.listen PORT, ->
   host = server.address().address
