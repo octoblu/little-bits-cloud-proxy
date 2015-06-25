@@ -1,0 +1,26 @@
+id: little-bits-cloud-proxy-blue-controller
+kind: ReplicationController
+apiVersion: v1beta1
+labels:
+  name: little-bits-cloud-proxy-blue
+  version: "$SHORT_COMMIT"
+desiredState:
+  replicas: 2
+  replicaSelector:
+    name: little-bits-cloud-proxy-blue
+    version: "$SHORT_COMMIT"
+  podTemplate:
+    labels:
+      name: little-bits-cloud-proxy-blue
+      app: little-bits-cloud-proxy-blue
+      version: "$SHORT_COMMIT"
+    desiredState:
+      manifest:
+        version: v1beta1
+        id: little-bits-cloud-proxy-blue
+        containers:
+          - name: little-bits-cloud-proxy-blue
+            image: octoblu/little-bits-cloud-proxy:$SHORT_COMMIT
+            ports:
+              - containerPort: 80
+

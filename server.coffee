@@ -38,8 +38,8 @@ app.options '*', cors()
 oauthProxyController = new OAuthProxyController meshbluConfig
 
 octobluStrategyConfig =
-  clientID: 'd199088a-5d76-4e0f-a932-9bd78a3cea87'
-  clientSecret: 'd45562239b2d90ffb6f0e8c3ec96fcb12b6525c7'
+  clientID: process.env.CLIENT_ID
+  clientSecret: process.env.CLIENT_SECRET
   callbackURL: 'https://little-bits-cloud-proxy.octoblu.com/api/octoblu/callback'
   passReqToCallback: true
 
