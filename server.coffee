@@ -1,8 +1,10 @@
 _ = require 'lodash'
 cors = require 'cors'
+async = require 'async'
 morgan = require 'morgan'
 express = require 'express'
 request = require 'request'
+NodeRSA = require 'node-rsa'
 passport = require 'passport'
 session = require 'cookie-session'
 bodyParser = require 'body-parser'
@@ -59,7 +61,7 @@ passport.use new OctobluStrategy octobluStrategyConfig, (req, token, secret, pro
   next null, uuid: profile.uuid
 
 app.post '/api/proxy', (req, res) ->
-  clientId = req.body.clientId
+  clientID = req.body.clientID
   uri = req.body.uri
   qs  = req.body.qs
   method = req.body.method
@@ -72,18 +74,21 @@ app.post '/api/proxy', (req, res) ->
 
   meshbluHttp = new MeshbluHttp uuid: process.env.CLIENT_ID, token: process.env.CLIENT_SECRET
   privateKey = meshbluHttp.setPrivateKey process.env.PRIVATE_KEY
-  meshbluHttp.devices type: 'auth:little-bits-cloud-proxy', clientId: clientId, (error, result) =>
+  meshbluHttp.devices type: 'auth:little-bits-cloud-proxy', clientID: clientID, (error, result) =>
     return res.status(422).send(error.message) if error?
     device = _.first result.devices
+    owners = _.without device.configureWhitelist, octobluStrategyConfig.clientID
 
-    owners = _.without device.configureWhitelist, octobluStrategyConfig.clientId
-    debug 'device owners', owners
+    verifySignature = (ownerUuid, callback=->) =>
+      meshbluHttp.publicKey ownerUuid, (error, result) =>
+        callback false if error?
+        callback false unless result?.publicKey?
+        publicKey = new NodeRSA(result.publicKey)
+        debug 'verifying signature', signature, "#{clientID}-#{ownerUuid}"
+        callback publicKey.verify "#{clientID}-#{ownerUuid}", signature, 'utf8', 'base64'
 
-    meshbluHttp.devices uuid: owners, (error, result) =>
-      return res.status(422).send(error.message) if error?
-      ownerDevices = result.devices
-      debug ownerDevices
-
+    async.detect owners, verifySignature, (ownerUuid) =>
+      return res.status(401).send(message: 'unable to verify signature') unless ownerUuid?
       clientSecret = privateKey.decrypt device.clientSecret, 'utf8'
 
       _.extend options,
@@ -107,30 +112,25 @@ app.post '/api/callback', (req, res) ->
   meshbluHttp = new MeshbluHttp uuid: process.env.CLIENT_ID, token: process.env.CLIENT_SECRET
   privateKey = meshbluHttp.setPrivateKey process.env.PRIVATE_KEY
   userUuid = req.user.uuid
-  clientId = req.body.deviceId
+  clientID = req.body.deviceId
   clientSecret = privateKey.encrypt req.body.token, 'base64'
-  meshbluHttp.devices type: 'auth:little-bits-cloud-proxy', clientId: clientId, (error, result) =>
+  meshbluHttp.devices type: 'auth:little-bits-cloud-proxy', clientID: clientID, (error, result) =>
     device = _.first(result.devices)
     update =
       $set:
         clientSecret: clientSecret
-
-    unless _.contains device.configureWhitelist, userUuid
-      update.$push ?= {}
-      update.$push.configureWhitelist = userUuid
-
-    unless _.contains device.discoverWhitelist, userUuid
-      update.$push ?= {}
-      update.$push.discoverWhitelist = userUuid
+      $addToSet:
+        configureWhitelist: userUuid
+        discoverWhitelist: userUuid
 
     if device
       meshbluHttp.updateDangerously device.uuid, update
     else
       meshbluHttp.register
         type: 'auth:little-bits-cloud-proxy'
-        configureWhitelist: [octobluStrategyConfig.clientId, userUuid]
-        discoverWhitelist: [octobluStrategyConfig.clientId, userUuid]
-        clientId: clientId
+        configureWhitelist: [octobluStrategyConfig.clientID, userUuid]
+        discoverWhitelist: [octobluStrategyConfig.clientID, userUuid]
+        clientID: clientID
         clientSecret: clientSecret
 
 app.get '/', passport.authenticate('octoblu')
