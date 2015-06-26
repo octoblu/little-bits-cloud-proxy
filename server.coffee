@@ -73,22 +73,32 @@ app.post '/api/proxy', (req, res) ->
   meshbluHttp = new MeshbluHttp uuid: process.env.CLIENT_ID, token: process.env.CLIENT_SECRET
   privateKey = meshbluHttp.setPrivateKey process.env.PRIVATE_KEY
   meshbluHttp.devices type: 'auth:little-bits-cloud-proxy', clientId: clientId, (error, result) =>
+    return res.status(422).send(error.message) if error?
     device = _.first result.devices
-    clientSecret = privateKey.decrypt device.clientSecret, 'utf8'
 
-    _.extend options,
-      uri: uri
-      qs: qs
-      method: method
-      headers: headers
-      json: postBody
-      auth:
-        bearer: clientSecret
+    owners = _.without device.configureWhitelist, octobluStrategyConfig.clientId
+    debug 'device owners', owners
 
-    debug 'request', options
-    request options, (error, response, body) ->
-      res.status(422).send(error.message) if error?
-      res.send(body)
+    meshbluHttp.devices uuid: owners, (error, result) =>
+      return res.status(422).send(error.message) if error?
+      ownerDevices = result.devices
+      debug ownerDevices
+
+      clientSecret = privateKey.decrypt device.clientSecret, 'utf8'
+
+      _.extend options,
+        uri: uri
+        qs: qs
+        method: method
+        headers: headers
+        json: postBody
+        auth:
+          bearer: clientSecret
+
+      debug 'request', options
+      request options, (error, response, body) ->
+        return res.status(422).send(error.message) if error?
+        res.send(body)
 
 app.get '/api/authorize', (req, res) ->
   res.sendFile 'index.html', root: __dirname + '/public'
@@ -118,8 +128,8 @@ app.post '/api/callback', (req, res) ->
     else
       meshbluHttp.register
         type: 'auth:little-bits-cloud-proxy'
-        configureWhitelist: [clientId, userUuid]
-        discoverWhitelist: [clientId, userUuid]
+        configureWhitelist: [octobluStrategyConfig.clientId, userUuid]
+        discoverWhitelist: [octobluStrategyConfig.clientId, userUuid]
         clientId: clientId
         clientSecret: clientSecret
 
