@@ -43,7 +43,7 @@ meshbluOptions =
   server: meshbluConfig.server
   port: meshbluConfig.port
 
-# app.use meshbluAuth meshbluOptions
+meshbluAuthorizer = meshbluAuth meshbluOptions
 
 app.options '*', cors()
 
@@ -60,7 +60,11 @@ passport.use new OctobluStrategy octobluStrategyConfig, (req, token, secret, pro
   req.session.token = token
   next null, uuid: profile.uuid
 
-app.post '/api/proxy', (req, res) ->
+app.post '/api/proxy', meshbluAuthorizer, (req, res) ->
+
+  debug '/api/proxy', req.body
+  return res.status(500).end()
+
   clientID = req.body.clientID
   uri = req.body.uri
   qs  = req.body.qs
@@ -128,10 +132,22 @@ app.post '/api/callback', (req, res) ->
     else
       meshbluHttp.register
         type: 'auth:little-bits-cloud-proxy'
-        configureWhitelist: [octobluStrategyConfig.clientID, userUuid]
-        discoverWhitelist: [octobluStrategyConfig.clientID, userUuid]
+        configureWhitelist: [octobluStrategyConfig.clientID]
+        discoverWhitelist: [octobluStrategyConfig.clientID]
         clientID: clientID
         clientSecret: clientSecret
+        meshblu:
+          messageForward: [octobluStrategyConfig.clientID]
+      , (error, device) ->
+        meshbluHttp.register
+          type: 'auth:user:little-bits-cloud-proxy'
+          configureWhitelist: [userUuid]
+          discoverWhitelist: [octobluStrategyConfig.clientID, userUuid]
+          parentDevice: device.uuid
+          meshblu:
+            messageForward: [device.uuid]
+        , (error, userDevice) ->
+          meshbluHttp.update device.uuid, sendWhitelist: [userDevice.uuid]
 
 app.get '/', passport.authenticate('octoblu')
 app.get '/api/octoblu/callback', passport.authenticate('octoblu'), (req, res) ->
