@@ -61,53 +61,52 @@ passport.use new OctobluStrategy octobluStrategyConfig, (req, token, secret, pro
   next null, uuid: profile.uuid
 
 app.post '/api/proxy', meshbluAuthorizer, (req, res) ->
-
-  debug '/api/proxy', req.body
-  return res.status(500).end()
-
-  clientID = req.body.clientID
-  uri = req.body.uri
-  qs  = req.body.qs
-  method = req.body.method
-  postBody = req.body.body ? false
-  headers = req.body.headers ? {}
-  signature = req.body.signature
-  options  = req.body.options ? {}
+  payload = req.body.payload
+  parentDevice = payload.parentDevice
+  uri = payload.uri
+  qs  = payload.qs
+  method = payload.method
+  postBody = payload.body ? false
+  headers = payload.headers ? {}
+  signature = payload.signature
+  options  = payload.options ? {}
+  respondTo = payload.respondTo
+  responseParams = payload.responseParams ? {}
+  json = payload.json
 
   headers['accept'] = 'application/vnd.littlebits.v2+json'
 
   meshbluHttp = new MeshbluHttp uuid: process.env.CLIENT_ID, token: process.env.CLIENT_SECRET
   privateKey = meshbluHttp.setPrivateKey process.env.PRIVATE_KEY
-  meshbluHttp.devices type: 'auth:little-bits-cloud-proxy', clientID: clientID, (error, result) =>
+  meshbluHttp.device parentDevice, (error, device) =>
     return res.status(422).send(error.message) if error?
-    device = _.first result.devices
-    owners = _.without device.configureWhitelist, octobluStrategyConfig.clientID
+    clientSecret = privateKey.decrypt device.clientSecret, 'utf8'
 
-    verifySignature = (ownerUuid, callback=->) =>
-      meshbluHttp.publicKey ownerUuid, (error, result) =>
-        callback false if error?
-        callback false unless result?.publicKey?
-        publicKey = new NodeRSA(result.publicKey)
-        debug 'verifying signature', signature, "#{clientID}-#{ownerUuid}"
-        callback publicKey.verify "#{clientID}-#{ownerUuid}", signature, 'utf8', 'base64'
+    _.extend options,
+      uri: uri
+      qs: qs
+      method: method
+      headers: headers
+      body: postBody
+      json: json
+      auth:
+        bearer: clientSecret
 
-    async.detect owners, verifySignature, (ownerUuid) =>
-      return res.status(401).send(message: 'unable to verify signature') unless ownerUuid?
-      clientSecret = privateKey.decrypt device.clientSecret, 'utf8'
-
-      _.extend options,
-        uri: uri
-        qs: qs
-        method: method
-        headers: headers
-        json: postBody
-        auth:
-          bearer: clientSecret
-
-      debug 'request', options
-      request options, (error, response, body) ->
-        return res.status(422).send(error.message) if error?
-        res.send(body)
+    debug 'request', options
+    request options, (error, response, body) ->
+      return res.status(422).send(error.message) if error?
+      res.send(body)
+      message =
+        devices: [respondTo]
+        payload:
+          body: body
+          uri: uri
+          qs: qs
+          method: method
+          responseParams: responseParams
+      meshbluHttp.message message, (error) ->
+        return res.status(500).send(error.message) if error?
+        res.status(201).end()
 
 app.get '/api/authorize', (req, res) ->
   res.sendFile 'index.html', root: __dirname + '/public'
