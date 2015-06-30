@@ -14,9 +14,10 @@ MeshbluAuthExpress = require 'express-meshblu-auth/src/meshblu-auth-express'
 meshbluHealthcheck = require 'express-meshblu-healthcheck'
 OAuthProxyController = require './src/oauth-proxy-controller'
 MeshbluConfig = require 'meshblu-config'
-OctobluStrategy = require 'passport-octoblu'
 MeshbluHttp = require 'meshblu-http'
 debug = require('debug')('little-bits-cloud-proxy')
+CredentialDeviceManager = require './src/models/credential-device-manager'
+UserCredentialDeviceManager = require './src/models/user-credential-device-manager'
 
 meshbluConfig = new MeshbluConfig().toJSON()
 
@@ -38,27 +39,11 @@ app.use passport.initialize()
 app.use passport.session()
 app.use bodyParser.urlencoded limit: '50mb', extended : true
 app.use bodyParser.json limit : '50mb'
-
-meshbluOptions =
-  server: meshbluConfig.server
-  port: meshbluConfig.port
-
-meshbluAuthorizer = meshbluAuth meshbluOptions
-
 app.options '*', cors()
 
-oauthProxyController = new OAuthProxyController meshbluConfig
-
-octobluStrategyConfig =
-  clientID: process.env.CLIENT_ID
-  clientSecret: process.env.CLIENT_SECRET
-  callbackURL: 'https://little-bits-cloud-proxy.octoblu.com/api/octoblu/callback'
-  passReqToCallback: true
-
-passport.use new OctobluStrategy octobluStrategyConfig, (req, token, secret, profile, next) ->
-  debug 'got token', token, secret
-  req.session.token = token
-  next null, uuid: profile.uuid
+meshbluAuthorizer = meshbluAuth
+  server: meshbluConfig.server
+  port: meshbluConfig.port
 
 app.post '/api/proxy', meshbluAuthorizer, (req, res) ->
   payload = req.body.payload
@@ -76,7 +61,7 @@ app.post '/api/proxy', meshbluAuthorizer, (req, res) ->
 
   headers['accept'] = 'application/vnd.littlebits.v2+json'
 
-  meshbluHttp = new MeshbluHttp uuid: process.env.CLIENT_ID, token: process.env.CLIENT_SECRET
+  meshbluHttp = new MeshbluHttp meshbluConfig
   privateKey = meshbluHttp.setPrivateKey process.env.PRIVATE_KEY
   meshbluHttp.device parentDevice, (error, device) =>
     return res.status(422).send(error.message) if error?
@@ -112,44 +97,32 @@ app.get '/api/authorize', (req, res) ->
   res.sendFile 'index.html', root: __dirname + '/public'
 
 app.post '/api/callback', (req, res) ->
-  meshbluHttp = new MeshbluHttp uuid: process.env.CLIENT_ID, token: process.env.CLIENT_SECRET
+  debug 'meshbluConfig', meshbluConfig
+  meshbluHttp = new MeshbluHttp meshbluConfig
   privateKey = meshbluHttp.setPrivateKey process.env.PRIVATE_KEY
   userUuid = req.user.uuid
   clientID = req.body.deviceId
   clientSecret = privateKey.encrypt req.body.token, 'base64'
-  meshbluHttp.devices type: 'auth:little-bits-cloud-proxy', clientID: clientID, (error, result) =>
-    device = _.first(result.devices)
-    update =
-      $set:
-        clientSecret: clientSecret
-      $addToSet:
-        configureWhitelist: userUuid
-        discoverWhitelist: userUuid
 
-    if device
-      meshbluHttp.updateDangerously device.uuid, update
-    else
-      meshbluHttp.register
-        type: 'auth:little-bits-cloud-proxy'
-        configureWhitelist: [octobluStrategyConfig.clientID]
-        discoverWhitelist: [octobluStrategyConfig.clientID]
-        clientID: clientID
-        clientSecret: clientSecret
-        meshblu:
-          messageForward: [octobluStrategyConfig.clientID]
-      , (error, device) ->
-        meshbluHttp.register
-          type: 'auth:user:little-bits-cloud-proxy'
-          configureWhitelist: [userUuid]
-          discoverWhitelist: [octobluStrategyConfig.clientID, userUuid]
-          parentDevice: device.uuid
-          meshblu:
-            messageForward: [device.uuid]
-        , (error, userDevice) ->
-          meshbluHttp.update device.uuid, sendWhitelist: [userDevice.uuid]
+  credentialDeviceManager = new CredentialDeviceManager _.extend({}, meshbluConfig, type: 'auth:little-bits-cloud-proxy')
+  userCredentialDeviceManager = new UserCredentialDeviceManager _.extend({}, meshbluConfig, type: 'auth-user:little-bits-cloud-proxy')
 
-app.get '/', passport.authenticate('octoblu')
-app.get '/api/octoblu/callback', passport.authenticate('octoblu'), (req, res) ->
+  # verify credentials are OK!!!
+
+  credentialDeviceManager.findOrCreate clientID, meshbluConfig.uuid, (error, device) =>
+    return res.status(500).send message: 'Unable to find or create device' if error?
+
+    userCredentialDeviceManager.findOrCreate device.uuid, userUuid, meshbluConfig.uuid, (error, userDevice) =>
+      return res.status(500).send message: 'Unable to find or create device' if error?
+
+      credentialDeviceManager.addUserDevice userDevice.uuid
+      credentialDeviceManager.updateClientSecret clientSecret
+
+app.get '/', (req, res) ->
+  res.status(422).send message: 'UUID is required'
+
+app.get '/:uuid', (req, res) ->
+  req.session.userUuid = req.params.uuid
   res.redirect '/api/authorize'
 
 server = app.listen PORT, ->
