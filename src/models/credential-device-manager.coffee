@@ -12,6 +12,8 @@ class CredentialDeviceManager
   create: (params, callback=->) =>
     options =
       type: @type
+      messageSchemaUrl: ''
+      logo: 'https://cdn.octoblu.com/icons/devices/little-bits-cloud.svg'
       owner: params.owner
       configureWhitelist: [params.owner]
       discoverWhitelist: [params.owner]

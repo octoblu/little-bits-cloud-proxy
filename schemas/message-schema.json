@@ -1,0 +1,20 @@
+{
+  "id": "https://raw.github.com/octoblu/little-bits-cloud-proxy/schemas/message-schema#",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "littleBits Cloud API",
+  "type": "object",
+  "required": [ "url" ],
+  "properties": {
+    "url": {
+      "type": "object",
+        "oneOf": [
+            { "$ref": "#/definitions/getDevices" },
+            { "$ref": "#/definitions/getSubscriptions" }
+        ]
+    }
+  },
+  "definitions": {
+    "getDevices": {},
+    "getSubscriptions": {}
+  }
+}

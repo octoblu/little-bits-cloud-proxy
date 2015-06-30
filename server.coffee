@@ -104,8 +104,8 @@ app.post '/api/callback', (req, res) ->
   clientID = req.body.deviceId
   clientSecret = privateKey.encrypt req.body.token, 'base64'
 
-  credentialDeviceManager = new CredentialDeviceManager _.extend({}, meshbluConfig, type: 'auth:little-bits-cloud-proxy')
-  userCredentialDeviceManager = new UserCredentialDeviceManager _.extend({}, meshbluConfig, type: 'auth-user:little-bits-cloud-proxy')
+  credentialDeviceManager = new CredentialDeviceManager _.extend({}, meshbluConfig, type: 'octoblu:credentials:little-bits-cloud')
+  userCredentialDeviceManager = new UserCredentialDeviceManager _.extend({}, meshbluConfig, type: 'octoblu:little-bits-cloud')
 
   # verify credentials are OK!!!
 
