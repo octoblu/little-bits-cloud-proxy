@@ -5,7 +5,7 @@ describe 'UserCredentialDeviceManager', ->
       devices: sinon.stub()
       register: sinon.stub()
     @MeshbluHttp = sinon.spy => @meshbluHttp
-    @meshbluJSON = type: 'auth-user:little-bits-cloud-proxy'
+    @meshbluJSON = type: 'auth-user:little-bits-cloud-proxy', logo: 'http://google.com', messageSchemaUrl: 'something'
     @dependencies =
       MeshbluHttp: @MeshbluHttp
 
@@ -20,6 +20,9 @@ describe 'UserCredentialDeviceManager', ->
         expect(@meshbluHttp.register).to.have.been.calledWith
           type: 'auth-user:little-bits-cloud-proxy'
           owner: '1235'
+          name: 'Little Bits'
+          logo: 'http://google.com'
+          messageSchemaUrl: 'something'
           configureWhitelist: ['1235']
           discoverWhitelist: ['p1555', '1235']
           parentDevice: 'bi235'

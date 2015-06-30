@@ -104,8 +104,8 @@ app.post '/api/callback', (req, res) ->
   clientID = req.body.deviceId
   clientSecret = privateKey.encrypt req.body.token, 'base64'
 
-  credentialDeviceManager = new CredentialDeviceManager _.extend({}, meshbluConfig, type: 'octoblu:credentials:little-bits-cloud')
-  userCredentialDeviceManager = new UserCredentialDeviceManager _.extend({}, meshbluConfig, type: 'octoblu:little-bits-cloud')
+  credentialDeviceManager = new CredentialDeviceManager _.extend({}, meshbluConfig, type: 'octoblu:credentials:little-bits-cloud', messageSchemaUrl: 'https://raw.githubusercontent.com/octoblu/little-bits-cloud-proxy/master/schemas/message-schema.json', logo: 'https://cdn.octoblu.com/icons/devices/little-bits-cloud.svg', name: 'littleBits Cloud')
+  userCredentialDeviceManager = new UserCredentialDeviceManager _.extend({}, meshbluConfig, type: 'octoblu:little-bits-cloud', messageSchemaUrl: 'https://raw.githubusercontent.com/octoblu/little-bits-cloud-proxy/master/schemas/message-schema.json', logo: 'https://cdn.octoblu.com/icons/devices/little-bits-cloud.svg', name: 'littleBits Cloud')
 
   # verify credentials are OK!!!
 
@@ -115,8 +115,8 @@ app.post '/api/callback', (req, res) ->
     userCredentialDeviceManager.findOrCreate device.uuid, userUuid, meshbluConfig.uuid, (error, userDevice) =>
       return res.status(500).send message: 'Unable to find or create device' if error?
 
-      credentialDeviceManager.addUserDevice userDevice.uuid
-      credentialDeviceManager.updateClientSecret clientSecret
+      credentialDeviceManager.addUserDevice device.uuid, userDevice.uuid
+      credentialDeviceManager.updateClientSecret device.uuid, clientSecret
 
 app.get '/', (req, res) ->
   res.status(422).send message: 'UUID is required'

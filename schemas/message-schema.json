@@ -1,5 +1,5 @@
 {
-  "id": "https://raw.github.com/octoblu/little-bits-cloud-proxy/schemas/message-schema#",
+  "id": "https://raw.githubusercontent.com/octoblu/little-bits-cloud-proxy/master/schemas/message-schema.json#",
   "$schema": "http://json-schema.org/draft-04/schema#",
   "description": "littleBits Cloud API",
   "type": "object",

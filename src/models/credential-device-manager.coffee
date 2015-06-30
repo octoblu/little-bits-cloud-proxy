@@ -3,6 +3,10 @@ _ = require 'lodash'
 class CredentialDeviceManager
   constructor: (@options, dependencies={}) ->
     @type = @options.type
+    @logo = @options.logo
+    @name = @options.name
+    @messageSchemaUrl = @options.messageSchemaUrl
+
     @MeshbluHttp = dependencies.MeshbluHttp ? require 'meshblu-http'
 
   addUserDevice: (deviceUuid, userDeviceUuid, callback=->) =>
@@ -12,8 +16,9 @@ class CredentialDeviceManager
   create: (params, callback=->) =>
     options =
       type: @type
-      messageSchemaUrl: ''
-      logo: 'https://cdn.octoblu.com/icons/devices/little-bits-cloud.svg'
+      messageSchemaUrl: @messageSchemaUrl
+      logo: @logo
+      name: @name
       owner: params.owner
       configureWhitelist: [params.owner]
       discoverWhitelist: [params.owner]

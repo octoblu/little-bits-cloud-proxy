@@ -8,7 +8,7 @@ describe 'CredentialDeviceManager', ->
       update: sinon.stub()
 
     @MeshbluHttp = sinon.spy => @meshbluHttp
-    @meshbluJSON = type: 'auth:little-bits-cloud-proxy'
+    @meshbluJSON = type: 'auth:little-bits-cloud-proxy', logo: 'http://seomthing', messageSchemaUrl: 'url', name: 'name'
     @dependencies =
       MeshbluHttp: @MeshbluHttp
 
@@ -33,9 +33,12 @@ describe 'CredentialDeviceManager', ->
         expect(@meshbluHttp.register).to.have.been.calledWith
           type: 'auth:little-bits-cloud-proxy'
           owner: '1235'
+          name: 'name'
           configureWhitelist: ['1235']
           discoverWhitelist: ['1235']
           clientID: 'bi235'
+          logo: 'http://seomthing'
+          messageSchemaUrl: 'url'
           meshblu:
             messageForward: ['1235']
 

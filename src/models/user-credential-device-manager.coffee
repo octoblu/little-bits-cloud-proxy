@@ -3,15 +3,22 @@ _ = require 'lodash'
 class UserCredentialDeviceManager
   constructor: (@options, dependencies={}) ->
     @type = @options.type
+    @logo = @options.logo
+    @name = @options.name
+    @messageSchemaUrl = @options.messageSchemaUrl
+
     @MeshbluHttp = dependencies.MeshbluHttp ? require 'meshblu-http'
 
   create: (params, callback=->) =>
     options =
       type: @type
+      name: @name
       owner: params.owner
+      parentDevice: params.parentUuid
+      messageSchemaUrl: @messageSchemaUrl
+      logo: @logo
       configureWhitelist: [params.owner]
       discoverWhitelist: [params.proxyUuid, params.owner]
-      parentDevice: params.parentUuid
       meshblu:
         messageForward: [params.parentUuid]
 
