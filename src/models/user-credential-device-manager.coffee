@@ -6,7 +6,7 @@ class UserCredentialDeviceManager
     @logo = @options.logo
     @name = @options.name
     @messageSchemaUrl = @options.messageSchemaUrl
-    @formSchemaUrl = @options.formSchemaUrl
+    @messageFormSchemaUrl = @options.messageFormSchemaUrl
 
     @MeshbluHttp = dependencies.MeshbluHttp ? require 'meshblu-http'
 
@@ -17,7 +17,7 @@ class UserCredentialDeviceManager
       owner: params.owner
       parentDevice: params.parentUuid
       messageSchemaUrl: @messageSchemaUrl
-      formSchemaUrl: @formSchemaUrl
+      messageFormSchemaUrl: @messageFormSchemaUrl
       logo: @logo
       configureWhitelist: [params.owner]
       discoverWhitelist: [params.proxyUuid, params.owner]
