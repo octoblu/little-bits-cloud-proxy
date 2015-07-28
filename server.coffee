@@ -106,7 +106,7 @@ app.post '/api/callback', (req, res) ->
 
   options =
     messageSchemaUrl: 'https://raw.githubusercontent.com/octoblu/little-bits-cloud-proxy/master/schemas/message-schema.json'
-    messageFormSchemaUrl: 'https://raw.githubusercontent.com/octoblu/little-bits-cloud-proxy/master/schemas/form-schema.json'
+    messageFormSchemaUrl: 'https://raw.githubusercontent.com/octoblu/little-bits-cloud-proxy/master/schemas/message-form-schema.json'
     logo: 'https://cdn.octoblu.com/icons/devices/little-bits-cloud.svg'
     name: 'littleBits Cloud'
 
