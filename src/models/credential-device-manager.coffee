@@ -6,6 +6,7 @@ class CredentialDeviceManager
     @logo = @options.logo
     @name = @options.name
     @messageSchemaUrl = @options.messageSchemaUrl
+    @formSchemaUrl = @options.formSchemaUrl
 
     @MeshbluHttp = dependencies.MeshbluHttp ? require 'meshblu-http'
 
@@ -17,6 +18,7 @@ class CredentialDeviceManager
     options =
       type: @type
       messageSchemaUrl: @messageSchemaUrl
+      formSchemaUrl: @formSchemaUrl
       logo: @logo
       name: @name
       owner: params.owner

@@ -104,8 +104,14 @@ app.post '/api/callback', (req, res) ->
   clientID = req.body.deviceId
   clientSecret = privateKey.encrypt req.body.token, 'base64'
 
-  credentialDeviceManager = new CredentialDeviceManager _.extend({}, meshbluConfig, type: 'octoblu:credentials:little-bits-cloud', messageSchemaUrl: 'https://raw.githubusercontent.com/octoblu/little-bits-cloud-proxy/master/schemas/message-schema.json', logo: 'https://cdn.octoblu.com/icons/devices/little-bits-cloud.svg', name: 'littleBits Cloud')
-  userCredentialDeviceManager = new UserCredentialDeviceManager _.extend({}, meshbluConfig, type: 'octoblu:little-bits-cloud', messageSchemaUrl: 'https://raw.githubusercontent.com/octoblu/little-bits-cloud-proxy/master/schemas/message-schema.json', logo: 'https://cdn.octoblu.com/icons/devices/little-bits-cloud.svg', name: 'littleBits Cloud')
+  options =
+    messageSchemaUrl: 'https://raw.githubusercontent.com/octoblu/little-bits-cloud-proxy/master/schemas/message-schema.json'
+    formSchemaUrl: 'https://raw.githubusercontent.com/octoblu/little-bits-cloud-proxy/master/schemas/form-schema.json'
+    logo: 'https://cdn.octoblu.com/icons/devices/little-bits-cloud.svg'
+    name: 'littleBits Cloud'
+
+  credentialDeviceManager = new CredentialDeviceManager _.extend {}, meshbluConfig, options, type: 'channel-credentials:little-bits-cloud'
+  userCredentialDeviceManager = new UserCredentialDeviceManager _.extend {}, _.extend {}, meshbluConfig, options, type: 'device-credentials:little-bits-cloud'
 
   # verify credentials are OK!!!
 

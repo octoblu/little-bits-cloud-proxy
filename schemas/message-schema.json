@@ -1,20 +1,45 @@
 {
-  "id": "https://raw.githubusercontent.com/octoblu/little-bits-cloud-proxy/master/schemas/message-schema.json#",
-  "$schema": "http://json-schema.org/draft-04/schema#",
-  "description": "littleBits Cloud API",
   "type": "object",
-  "required": [ "url" ],
   "properties": {
     "url": {
-      "type": "object",
-        "oneOf": [
-            { "$ref": "#/definitions/getDevices" },
-            { "$ref": "#/definitions/getSubscriptions" }
-        ]
+      "type": "string",
+      "enum": [
+        "https://api-http.littlebitscloud.cc/devices/:device_id",
+        "https://api-http.littlebitscloud.cc/devices/:device_id/output",
+        "https://api-http.littlebitscloud.cc/subscriptions",
+        "https://api-http.littlebitscloud.cc/subscriptions",
+        "https://api-http.littlebitscloud.cc/subscriptions"
+      ]
+    },
+    "https://api-http.littlebitscloud.cc/devices/:device_id#:device_id": {
+      "type": "string",
+      "description": "Device ID",
+      "required": true
+    },
+    "https://api-http.littlebitscloud.cc/devices/:device_id/output#:device_id": {
+      "type": "string",
+      "description": "Device Id",
+      "required": true
+    },
+    "https://api-http.littlebitscloud.cc/devices/:device_id/output#percent": {
+      "type": "integer",
+      "description": "Percent"
+    },
+    "https://api-http.littlebitscloud.cc/devices/:device_id/output#duration_ms": {
+      "type": "integer",
+      "description": "Duration Milliseconds"
+    },
+    "https://api-http.littlebitscloud.cc/subscriptions#subscriber_id": {
+      "type": "string",
+      "description": "Subscriber Id"
+    },
+    "https://api-http.littlebitscloud.cc/subscriptions#publisher_id": {
+      "type": "string",
+      "description": "Publisher Id"
+    },
+    "https://api-http.littlebitscloud.cc/subscriptions#publisher_events": {
+      "type": "string",
+      "description": "Publisher Events"
     }
-  },
-  "definitions": {
-    "getDevices": {},
-    "getSubscriptions": {}
   }
 }

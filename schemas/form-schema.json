@@ -1,0 +1,108 @@
+[
+  {
+    "key": "url",
+    "title": "Endpoint",
+    "titleMap": [
+      {
+        "value": "https://api-http.littlebitscloud.cc/devices/:device_id",
+        "name": "Returns An Array Of Device Objects"
+      },
+      {
+        "value": "https://api-http.littlebitscloud.cc/devices/:device_id/output",
+        "name": "Post Devices Output"
+      },
+      {
+        "value": "https://api-http.littlebitscloud.cc/subscriptions",
+        "name": "Gets An Array Of Subscription Objects"
+      },
+      {
+        "value": "https://api-http.littlebitscloud.cc/subscriptions",
+        "name": "Delete Subscriptions"
+      },
+      {
+        "value": "https://api-http.littlebitscloud.cc/subscriptions",
+        "name": "Post Subscriptions"
+      }
+    ]
+  },
+  {
+    "type": "help",
+    "helpvalue": "GET https://api-http.littlebitscloud.cc/devices/:device_id",
+    "condition": "model.url === 'https://api-http.littlebitscloud.cc/devices/:device_id'"
+  },
+  {
+    "key": "https://api-http.littlebitscloud.cc/devices/:device_id#:device_id",
+    "title": "Device ID",
+    "condition": "model.url === 'https://api-http.littlebitscloud.cc/devices/:device_id'"
+  },
+  {
+    "type": "help",
+    "helpvalue": "POST https://api-http.littlebitscloud.cc/devices/:device_id/output",
+    "condition": "model.url === 'https://api-http.littlebitscloud.cc/devices/:device_id/output'"
+  },
+  {
+    "key": "https://api-http.littlebitscloud.cc/devices/:device_id/output#:device_id",
+    "title": "Device Id",
+    "condition": "model.url === 'https://api-http.littlebitscloud.cc/devices/:device_id/output'"
+  },
+  {
+    "key": "https://api-http.littlebitscloud.cc/devices/:device_id/output#percent",
+    "title": "Percent",
+    "condition": "model.url === 'https://api-http.littlebitscloud.cc/devices/:device_id/output'"
+  },
+  {
+    "key": "https://api-http.littlebitscloud.cc/devices/:device_id/output#duration_ms",
+    "title": "Duration Milliseconds",
+    "condition": "model.url === 'https://api-http.littlebitscloud.cc/devices/:device_id/output'"
+  },
+  {
+    "type": "help",
+    "helpvalue": "GET https://api-http.littlebitscloud.cc/subscriptions",
+    "condition": "model.url === 'https://api-http.littlebitscloud.cc/subscriptions'"
+  },
+  {
+    "key": "https://api-http.littlebitscloud.cc/subscriptions#subscriber_id",
+    "title": "Subscriber Id",
+    "condition": "model.url === 'https://api-http.littlebitscloud.cc/subscriptions'"
+  },
+  {
+    "key": "https://api-http.littlebitscloud.cc/subscriptions#publisher_id",
+    "title": "Publisher Id",
+    "condition": "model.url === 'https://api-http.littlebitscloud.cc/subscriptions'"
+  },
+  {
+    "type": "help",
+    "helpvalue": "DELETE https://api-http.littlebitscloud.cc/subscriptions",
+    "condition": "model.url === 'https://api-http.littlebitscloud.cc/subscriptions'"
+  },
+  {
+    "key": "https://api-http.littlebitscloud.cc/subscriptions#subscriber_id",
+    "title": "Subscriber Id",
+    "condition": "model.url === 'https://api-http.littlebitscloud.cc/subscriptions'"
+  },
+  {
+    "key": "https://api-http.littlebitscloud.cc/subscriptions#publisher_id",
+    "title": "Publisher Id",
+    "condition": "model.url === 'https://api-http.littlebitscloud.cc/subscriptions'"
+  },
+  {
+    "type": "help",
+    "helpvalue": "POST https://api-http.littlebitscloud.cc/subscriptions",
+    "condition": "model.url === 'https://api-http.littlebitscloud.cc/subscriptions'"
+  },
+  {
+    "key": "https://api-http.littlebitscloud.cc/subscriptions#subscriber_id",
+    "title": "Subscriber Id",
+    "condition": "model.url === 'https://api-http.littlebitscloud.cc/subscriptions'"
+  },
+  {
+    "key": "https://api-http.littlebitscloud.cc/subscriptions#publisher_id",
+    "title": "Publisher Id",
+    "condition": "model.url === 'https://api-http.littlebitscloud.cc/subscriptions'"
+  },
+  {
+    "key": "https://api-http.littlebitscloud.cc/subscriptions#publisher_events",
+    "title": "Publisher Events",
+    "condition": "model.url === 'https://api-http.littlebitscloud.cc/subscriptions'"
+  }
+]
