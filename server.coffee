@@ -62,7 +62,7 @@ app.post '/api/proxy', meshbluAuthorizer, (req, res) ->
   headers['accept'] = 'application/vnd.littlebits.v2+json'
 
   meshbluHttp = new MeshbluHttp meshbluConfig
-  privateKey = meshbluHttp.setPrivateKey process.env.PRIVATE_KEY
+  privateKey = meshbluHttp.setPrivateKey meshbluConfig.privateKey
   meshbluHttp.device parentDevice, (error, device) =>
     return res.status(422).send(error.message) if error?
     clientSecret = privateKey.decrypt device.clientSecret, 'utf8'
@@ -99,8 +99,8 @@ app.get '/api/authorize', (req, res) ->
 app.post '/api/callback', (req, res) ->
   debug 'meshbluConfig', meshbluConfig
   meshbluHttp = new MeshbluHttp meshbluConfig
-  privateKey = meshbluHttp.setPrivateKey process.env.PRIVATE_KEY
-  userUuid = req.user.uuid
+  privateKey = meshbluHttp.setPrivateKey meshbluConfig.privateKey
+  userUuid = req.session.userUuid
   clientID = req.body.deviceId
   clientSecret = privateKey.encrypt req.body.token, 'base64'
 
@@ -118,11 +118,17 @@ app.post '/api/callback', (req, res) ->
       credentialDeviceManager.addUserDevice device.uuid, userDevice.uuid
       credentialDeviceManager.updateClientSecret device.uuid, clientSecret
 
+      return res.redirect req.session.callbackUrl if req.session.callbackUrl?
+
+      res.status(201).send uuid: userDevice.uuid
+
 app.get '/', (req, res) ->
   res.status(422).send message: 'UUID is required'
 
-app.get '/:uuid', (req, res) ->
+app.get '/new/:uuid', (req, res) ->
   req.session.userUuid = req.params.uuid
+  req.session.callbackUrl = req.query.callbackUrl
+  debug 'callbackUrl', req.session.callbackUrl
   res.redirect '/api/authorize'
 
 server = app.listen PORT, ->

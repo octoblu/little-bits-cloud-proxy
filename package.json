@@ -31,7 +31,7 @@
     "express-meshblu-healthcheck": "^1.0.0",
     "express-session": "^1.11.3",
     "lodash": "^3.9.3",
-    "meshblu-config": "^2.0.0",
+    "meshblu-config": "^2.2.0",
     "meshblu-http": "^3.4.0",
     "morgan": "^1.5.3",
     "node-rsa": "^0.2.24",
