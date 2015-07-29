@@ -28,7 +28,7 @@
   {
     "type": "help",
     "helpvalue": "GET https://api-http.littlebitscloud.cc/devices/:device_id",
-    "condition": "model.url === 'https://api-http.littlebitscloud.cc/devices/:device_id && model.method === 'GET''"
+    "condition": "model.url === 'https://api-http.littlebitscloud.cc/devices/:device_id' && model.method === 'GET'"
   },
   {
     "key": "GET-https://api-http-littlebitscloud-cc/devices/:device_id#:device_id",
@@ -38,7 +38,7 @@
   {
     "type": "help",
     "helpvalue": "POST https://api-http.littlebitscloud.cc/devices/:device_id/output",
-    "condition": "model.url === 'https://api-http.littlebitscloud.cc/devices/:device_id/output && model.method === 'POST''"
+    "condition": "model.url === 'https://api-http.littlebitscloud.cc/devices/:device_id/output' && model.method === 'POST'"
   },
   {
     "key": "POST-https://api-http-littlebitscloud-cc/devices/:device_id/output#:device_id",
@@ -58,7 +58,7 @@
   {
     "type": "help",
     "helpvalue": "GET https://api-http.littlebitscloud.cc/subscriptions",
-    "condition": "model.url === 'https://api-http.littlebitscloud.cc/subscriptions && model.method === 'GET''"
+    "condition": "model.url === 'https://api-http.littlebitscloud.cc/subscriptions' && model.method === 'GET'"
   },
   {
     "key": "GET-https://api-http-littlebitscloud-cc/subscriptions#subscriber_id",
@@ -73,7 +73,7 @@
   {
     "type": "help",
     "helpvalue": "DELETE https://api-http.littlebitscloud.cc/subscriptions",
-    "condition": "model.url === 'https://api-http.littlebitscloud.cc/subscriptions && model.method === 'DELETE''"
+    "condition": "model.url === 'https://api-http.littlebitscloud.cc/subscriptions' && model.method === 'DELETE'"
   },
   {
     "key": "DELETE-https://api-http-littlebitscloud-cc/subscriptions#subscriber_id",
@@ -88,7 +88,7 @@
   {
     "type": "help",
     "helpvalue": "POST https://api-http.littlebitscloud.cc/subscriptions",
-    "condition": "model.url === 'https://api-http.littlebitscloud.cc/subscriptions && model.method === 'POST''"
+    "condition": "model.url === 'https://api-http.littlebitscloud.cc/subscriptions' && model.method === 'POST'"
   },
   {
     "key": "POST-https://api-http-littlebitscloud-cc/subscriptions#subscriber_id",
