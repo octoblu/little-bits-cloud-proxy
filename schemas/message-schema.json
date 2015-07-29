@@ -2,37 +2,32 @@
   "type": "object",
   "properties": {
     "endpoint": {
-      "type": "object",
+      "type": "string",
       "enum": [
-        {
-          "url": "https://api-http.littlebitscloud.cc/devices/:device_id",
-          "method": "GET"
-        },
-        {
-          "url": "https://api-http.littlebitscloud.cc/devices/:device_id/output",
-          "method": "POST"
-        },
-        {
-          "url": "https://api-http.littlebitscloud.cc/subscriptions",
-          "method": "GET"
-        },
-        {
-          "url": "https://api-http.littlebitscloud.cc/subscriptions",
-          "method": "DELETE"
-        },
-        {
-          "url": "https://api-http.littlebitscloud.cc/subscriptions",
-          "method": "POST"
-        }
+        "GET-https://api-http.littlebitscloud.cc/devices/:device_id",
+        "POST-https://api-http.littlebitscloud.cc/devices/:device_id/output",
+        "GET-https://api-http.littlebitscloud.cc/subscriptions",
+        "DELETE-https://api-http.littlebitscloud.cc/subscriptions",
+        "POST-https://api-http.littlebitscloud.cc/subscriptions"
       ]
     },
     "url": {
       "type": "string",
-      "required": true
+      "required": true,
+      "enum": [
+        "https://api-http.littlebitscloud.cc/devices/:device_id",
+        "https://api-http.littlebitscloud.cc/devices/:device_id/output",
+        "https://api-http.littlebitscloud.cc/subscriptions"
+      ]
     },
     "method": {
       "type": "string",
-      "required": true
+      "required": true,
+      "enum": [
+        "GET",
+        "POST",
+        "DELETE"
+      ]
     },
     "GET-https://api-http-littlebitscloud-cc/devices/:device_id#:device_id": {
       "type": "string",
