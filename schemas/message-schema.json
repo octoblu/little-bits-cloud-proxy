@@ -29,49 +29,28 @@
         "DELETE"
       ]
     },
-    "GET-https://api-http-littlebitscloud-cc/devices/:device_id#:device_id": {
-      "type": "string",
-      "description": "Device ID",
-      "required": true
-    },
-    "POST-https://api-http-littlebitscloud-cc/devices/:device_id/output#:device_id": {
+    "device_id": {
       "type": "string",
       "description": "Device Id",
       "required": true
     },
-    "POST-https://api-http-littlebitscloud-cc/devices/:device_id/output#percent": {
+    "percent": {
       "type": "integer",
       "description": "Percent"
     },
-    "POST-https://api-http-littlebitscloud-cc/devices/:device_id/output#duration_ms": {
+    "duration_ms": {
       "type": "integer",
       "description": "Duration Milliseconds"
     },
-    "GET-https://api-http-littlebitscloud-cc/subscriptions#subscriber_id": {
+    "subscriber_id": {
       "type": "string",
       "description": "Subscriber Id"
     },
-    "GET-https://api-http-littlebitscloud-cc/subscriptions#publisher_id": {
+    "publisher_id": {
       "type": "string",
       "description": "Publisher Id"
     },
-    "DELETE-https://api-http-littlebitscloud-cc/subscriptions#subscriber_id": {
-      "type": "string",
-      "description": "Subscriber Id"
-    },
-    "DELETE-https://api-http-littlebitscloud-cc/subscriptions#publisher_id": {
-      "type": "string",
-      "description": "Publisher Id"
-    },
-    "POST-https://api-http-littlebitscloud-cc/subscriptions#subscriber_id": {
-      "type": "string",
-      "description": "Subscriber Id"
-    },
-    "POST-https://api-http-littlebitscloud-cc/subscriptions#publisher_id": {
-      "type": "string",
-      "description": "Publisher Id"
-    },
-    "POST-https://api-http-littlebitscloud-cc/subscriptions#publisher_events": {
+    "publisher_events": {
       "type": "string",
       "description": "Publisher Events"
     }
