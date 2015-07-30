@@ -18,6 +18,8 @@ MeshbluHttp = require 'meshblu-http'
 debug = require('debug')('little-bits-cloud-proxy')
 CredentialDeviceManager = require './src/models/credential-device-manager'
 UserCredentialDeviceManager = require './src/models/user-credential-device-manager'
+ProxyRequestModel = require './src/proxy-request-model'
+LittleBitsOptionsBuilder = require './src/little-bits-options-builder'
 
 meshbluConfig = new MeshbluConfig().toJSON()
 
@@ -45,6 +47,13 @@ meshbluAuthorizer = meshbluAuth
   server: meshbluConfig.server
   port: meshbluConfig.port
 
+app.post '/api/messages', meshbluAuthorizer, (req, res) ->
+  proxyRequest = new ProxyRequestModel meshbluOptions, LittleBitsOptionsBuilder
+  proxyRequest.sendMessage req.body, (error, message) =>
+    return res.status(422).send(error.message) if error?
+
+    res.send message
+
 app.post '/api/proxy', meshbluAuthorizer, (req, res) ->
   payload = req.body.payload
   parentDevice = payload.parentDevice
@@ -59,39 +68,6 @@ app.post '/api/proxy', meshbluAuthorizer, (req, res) ->
   responseParams = payload.responseParams ? {}
   json = payload.json
 
-  headers['accept'] = 'application/vnd.littlebits.v2+json'
-
-  meshbluHttp = new MeshbluHttp meshbluConfig
-  privateKey = meshbluHttp.setPrivateKey meshbluConfig.privateKey
-  meshbluHttp.device parentDevice, (error, device) =>
-    return res.status(422).send(error.message) if error?
-    clientSecret = privateKey.decrypt device.clientSecret, 'utf8'
-
-    _.extend options,
-      uri: uri
-      qs: qs
-      method: method
-      headers: headers
-      body: postBody
-      json: json
-      auth:
-        bearer: clientSecret
-
-    debug 'request', options
-    request options, (error, response, body) ->
-      return res.status(422).send(error.message) if error?
-      res.send(body)
-      message =
-        devices: [respondTo]
-        payload:
-          body: body
-          uri: uri
-          qs: qs
-          method: method
-          responseParams: responseParams
-      meshbluHttp.message message, (error) ->
-        return res.status(500).send(error.message) if error?
-        res.status(201).end()
 
 app.get '/api/authorize', (req, res) ->
   res.sendFile 'index.html', root: __dirname + '/public'

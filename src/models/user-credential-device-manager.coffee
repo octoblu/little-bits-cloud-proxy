@@ -13,6 +13,7 @@ class UserCredentialDeviceManager
   create: (params, callback=->) =>
     options =
       type: @type
+      online: true
       name: @name
       owner: params.owner
       parentDevice: params.parentUuid

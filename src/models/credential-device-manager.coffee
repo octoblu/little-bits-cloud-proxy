@@ -17,6 +17,7 @@ class CredentialDeviceManager
   create: (params, callback=->) =>
     options =
       type: @type
+      online: true
       messageSchemaUrl: @messageSchemaUrl
       messageFormSchemaUrl: @messageFormSchemaUrl
       logo: @logo
