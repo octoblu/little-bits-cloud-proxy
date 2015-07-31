@@ -1,58 +1,86 @@
 {
   "type": "object",
   "properties": {
-    "endpoint": {
+    "action": {
       "type": "string",
       "enum": [
-        "GET-https://api-http.littlebitscloud.cc/devices/:device_id",
-        "POST-https://api-http.littlebitscloud.cc/devices/:device_id/output",
-        "GET-https://api-http.littlebitscloud.cc/subscriptions",
-        "DELETE-https://api-http.littlebitscloud.cc/subscriptions",
-        "POST-https://api-http.littlebitscloud.cc/subscriptions"
+        "getDevices",
+        "sendEventToSubscribers",
+        "getSubscriptions",
+        "deleteSubscription",
+        "createSubscription"
       ]
     },
-    "url": {
-      "type": "string",
-      "required": true,
-      "enum": [
-        "https://api-http.littlebitscloud.cc/devices/:device_id",
-        "https://api-http.littlebitscloud.cc/devices/:device_id/output",
-        "https://api-http.littlebitscloud.cc/subscriptions"
-      ]
+    "getDevices": {
+      "type": "object",
+      "properties": {
+        "device_id": {
+          "type": "string",
+          "description": "Device ID",
+          "required": true
+        }
+      }
     },
-    "method": {
-      "type": "string",
-      "required": true,
-      "enum": [
-        "GET",
-        "POST",
-        "DELETE"
-      ]
+    "sendEventToSubscribers": {
+      "type": "object",
+      "properties": {
+        "device_id": {
+          "type": "string",
+          "description": "Device Id",
+          "required": true
+        },
+        "percent": {
+          "type": "integer",
+          "description": "Percent"
+        },
+        "duration_ms": {
+          "type": "integer",
+          "description": "Duration Milliseconds"
+        }
+      }
     },
-    "device_id": {
-      "type": "string",
-      "description": "Device Id",
-      "required": true
+    "getSubscriptions": {
+      "type": "object",
+      "properties": {
+        "subscriber_id": {
+          "type": "string",
+          "description": "Subscriber Id"
+        },
+        "publisher_id": {
+          "type": "string",
+          "description": "Publisher Id"
+        }
+      }
     },
-    "percent": {
-      "type": "integer",
-      "description": "Percent"
+    "deleteSubscription": {
+      "type": "object",
+      "properties": {
+        "subscriber_id": {
+          "type": "string",
+          "description": "Subscriber Id"
+        },
+        "publisher_id": {
+          "type": "string",
+          "description": "Publisher Id"
+        }
+      }
     },
-    "duration_ms": {
-      "type": "integer",
-      "description": "Duration Milliseconds"
-    },
-    "subscriber_id": {
-      "type": "string",
-      "description": "Subscriber Id"
-    },
-    "publisher_id": {
-      "type": "string",
-      "description": "Publisher Id"
-    },
-    "publisher_events": {
-      "type": "string",
-      "description": "Publisher Events"
+    "createSubscription": {
+      "type": "object",
+      "properties": {
+        "subscriber_id": {
+          "type": "string",
+          "description": "Subscriber Id"
+        },
+        "publisher_id": {
+          "type": "string",
+          "description": "Publisher Id"
+        },
+        "publisher_events": {
+          "type": "string",
+          "description": "Publisher Events"
+        }
+      }
     }
   }
 }

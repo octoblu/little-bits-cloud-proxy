@@ -1,108 +1,110 @@
 [
   {
-    "key": "endpoint",
-    "title": "Endpoint",
+    "key": "action",
+    "title": "Action",
     "titleMap": [
       {
-        "value": "GET-https://api-http.littlebitscloud.cc/devices/:device_id",
+        "value": "getDevices",
         "name": "Returns An Array Of Device Objects"
       },
       {
-        "value": "POST-https://api-http.littlebitscloud.cc/devices/:device_id/output",
+        "value": "sendEventToSubscribers",
         "name": "Post Devices Output"
       },
       {
-        "value": "GET-https://api-http.littlebitscloud.cc/subscriptions",
+        "value": "getSubscriptions",
         "name": "Gets An Array Of Subscription Objects"
       },
       {
-        "value": "DELETE-https://api-http.littlebitscloud.cc/subscriptions",
+        "value": "deleteSubscription",
         "name": "Delete Subscriptions"
       },
       {
-        "value": "POST-https://api-http.littlebitscloud.cc/subscriptions",
+        "value": "createSubscription",
         "name": "Post Subscriptions"
       }
     ]
   },
   {
-    "type": "help",
-    "helpvalue": "GET https://api-http.littlebitscloud.cc/devices/:device_id",
-    "condition": "model.url === 'https://api-http.littlebitscloud.cc/devices/:device_id' && model.method === 'GET'"
+    "key": "getDevices",
+    "notitle": true,
+    "type": "hidden"
   },
   {
-    "key": "device_id",
+    "key": "getDevices.device_id",
     "title": "Device ID",
-    "condition": "model.url === 'https://api-http.littlebitscloud.cc/devices/:device_id' && model.method === 'GET'"
+    "condition": "model.action === 'getDevices'",
+    "required": true
   },
   {
-    "type": "help",
-    "helpvalue": "POST https://api-http.littlebitscloud.cc/devices/:device_id/output",
-    "condition": "model.url === 'https://api-http.littlebitscloud.cc/devices/:device_id/output' && model.method === 'POST'"
+    "key": "sendEventToSubscribers",
+    "notitle": true,
+    "type": "hidden"
   },
   {
-    "key": "device_id",
+    "key": "sendEventToSubscribers.device_id",
     "title": "Device Id",
-    "condition": "model.url === 'https://api-http.littlebitscloud.cc/devices/:device_id/output' && model.method === 'POST'"
+    "condition": "model.action === 'sendEventToSubscribers'",
+    "required": true
   },
   {
-    "key": "percent",
+    "key": "sendEventToSubscribers.percent",
     "title": "Percent",
-    "condition": "model.url === 'https://api-http.littlebitscloud.cc/devices/:device_id/output' && model.method === 'POST'"
+    "condition": "model.action === 'sendEventToSubscribers'"
   },
   {
-    "key": "duration_ms",
+    "key": "sendEventToSubscribers.duration_ms",
     "title": "Duration Milliseconds",
-    "condition": "model.url === 'https://api-http.littlebitscloud.cc/devices/:device_id/output' && model.method === 'POST'"
+    "condition": "model.action === 'sendEventToSubscribers'"
   },
   {
-    "type": "help",
-    "helpvalue": "GET https://api-http.littlebitscloud.cc/subscriptions",
-    "condition": "model.url === 'https://api-http.littlebitscloud.cc/subscriptions' && model.method === 'GET'"
+    "key": "getSubscriptions",
+    "notitle": true,
+    "type": "hidden"
   },
   {
-    "key": "subscriber_id",
+    "key": "getSubscriptions.subscriber_id",
     "title": "Subscriber Id",
-    "condition": "model.url === 'https://api-http.littlebitscloud.cc/subscriptions' && model.method === 'GET'"
+    "condition": "model.action === 'getSubscriptions'"
   },
   {
-    "key": "publisher_id",
+    "key": "getSubscriptions.publisher_id",
     "title": "Publisher Id",
-    "condition": "model.url === 'https://api-http.littlebitscloud.cc/subscriptions' && model.method === 'GET'"
+    "condition": "model.action === 'getSubscriptions'"
   },
   {
-    "type": "help",
-    "helpvalue": "DELETE https://api-http.littlebitscloud.cc/subscriptions",
-    "condition": "model.url === 'https://api-http.littlebitscloud.cc/subscriptions' && model.method === 'DELETE'"
+    "key": "deleteSubscription",
+    "notitle": true,
+    "type": "hidden"
   },
   {
-    "key": "subscriber_id",
+    "key": "deleteSubscription.subscriber_id",
     "title": "Subscriber Id",
-    "condition": "model.url === 'https://api-http.littlebitscloud.cc/subscriptions' && model.method === 'DELETE'"
+    "condition": "model.action === 'deleteSubscription'"
   },
   {
-    "key": "publisher_id",
+    "key": "deleteSubscription.publisher_id",
     "title": "Publisher Id",
-    "condition": "model.url === 'https://api-http.littlebitscloud.cc/subscriptions' && model.method === 'DELETE'"
+    "condition": "model.action === 'deleteSubscription'"
   },
   {
-    "type": "help",
-    "helpvalue": "POST https://api-http.littlebitscloud.cc/subscriptions",
-    "condition": "model.url === 'https://api-http.littlebitscloud.cc/subscriptions' && model.method === 'POST'"
+    "key": "createSubscription",
+    "notitle": true,
+    "type": "hidden"
   },
   {
-    "key": "subscriber_id",
+    "key": "createSubscription.subscriber_id",
     "title": "Subscriber Id",
-    "condition": "model.url === 'https://api-http.littlebitscloud.cc/subscriptions' && model.method === 'POST'"
+    "condition": "model.action === 'createSubscription'"
   },
   {
-    "key": "publisher_id",
+    "key": "createSubscription.publisher_id",
     "title": "Publisher Id",
-    "condition": "model.url === 'https://api-http.littlebitscloud.cc/subscriptions' && model.method === 'POST'"
+    "condition": "model.action === 'createSubscription'"
   },
   {
-    "key": "publisher_events",
+    "key": "createSubscription.publisher_events",
     "title": "Publisher Events",
-    "condition": "model.url === 'https://api-http.littlebitscloud.cc/subscriptions' && model.method === 'POST'"
+    "condition": "model.action === 'createSubscription'"
   }
 ]
