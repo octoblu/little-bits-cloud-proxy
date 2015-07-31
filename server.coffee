@@ -50,6 +50,7 @@ meshbluAuthorizer = meshbluAuth
 app.post '/api/messages', meshbluAuthorizer, (req, res) ->
   proxyRequest = new ProxyRequestModel meshbluConfig, LittleBitsOptionsBuilder
   proxyRequest.sendMessage req.body, (error, message) =>
+    debug 'sendMessage response', error, message
     return res.status(422).send(error.message) if error?
 
     res.status(201).send message

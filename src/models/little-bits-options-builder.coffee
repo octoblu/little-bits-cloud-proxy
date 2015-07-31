@@ -1,13 +1,65 @@
 _ = require 'lodash'
 
 class LittleBitsOptionsBuilder
+  allowedActions : [
+    'getDevices'
+    'sendEventToSubscribers'
+    'getSubscriptions'
+    'deleteSubscription'
+    'createSubscription'
+  ]
 
-  getDevices: (payload, callback) =>
-    uri = "https://api-http.littlebitscloud.cc/devices/#{payload.device_id}"
-    callback null, uri: uri, method: 'GET'
+  getDevices: (payload, callback=->) =>
+    options =
+      method: 'GET'
+      uri: "https://api-http.littlebitscloud.cc/devices/#{payload.device_id}"
+
+    callback null, options
+
+  sendEventToSubscribers: (payload, callback=->) =>
+    options =
+      method: 'POST'
+      uri: "https://api-http.littlebitscloud.cc/devices/#{payload.device_id}/output"
+      json:
+        percent: payload.percent
+        duration_ms: payload.duration_ms
+
+    callback null, options
+
+  getSubscriptions: (payload, callback=->) =>
+    options =
+      method: 'GET'
+      uri: 'https://api-http.littlebitscloud.cc/subscriptions'
+      qs:
+        publisher_id: payload.publisher_id
+        subscriber_id: payload.subscriber_id
+
+    callback null, options
+
+  deleteSubscription: (payload, callback=->) =>
+    options =
+      method: 'DELETE'
+      uri: 'https://api-http.littlebitscloud.cc/subscriptions'
+      qs:
+        publisher_id: payload.publisher_id
+        subscriber_id: payload.subscriber_id
+
+    callback null, options
+
+  createSubscription: (payload, callback=->) =>
+    options =
+      method: 'POST'
+      uri: 'https://api-http.littlebitscloud.cc/subscriptions'
+      json:
+        publisher_id: payload.publisher_id
+        subscriber_id: payload.subscriber_id
+        publisher_events: payload.publisher_events
+
+    callback null, options
 
   build: (payload, credentials, callback=->) =>
-    return callback new Error 'Missing Url' unless payload.url?
+    subschema = payload.subschema
+    return callback new Error 'Unrecognized Action' unless _.contains @allowedActions, subschema
 
     defaultOptions =
       headers:
@@ -15,10 +67,11 @@ class LittleBitsOptionsBuilder
       auth:
         bearer: credentials
 
-    if payload.action == 'getDevices'
-      @getDevices payload, (error, options) =>
-        return callback null, _.defaults({}, options, defaultOptions)
+    #don't worry about it.
+    @[subschema] payload[subschema], (error, options) =>
+      return callback error if error?
 
-        callback new Error 'Unrecognized Options'
+      sendOptions = _.defaults {}, options, defaultOptions
+      callback null, sendOptions
 
 module.exports = LittleBitsOptionsBuilder
