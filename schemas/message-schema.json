@@ -1,7 +1,7 @@
 {
   "type": "object",
   "properties": {
-    "action": {
+    "subschema": {
       "type": "string",
       "enum": [
         "getDevices",

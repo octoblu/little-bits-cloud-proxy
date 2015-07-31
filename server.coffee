@@ -18,8 +18,8 @@ MeshbluHttp = require 'meshblu-http'
 debug = require('debug')('little-bits-cloud-proxy')
 CredentialDeviceManager = require './src/models/credential-device-manager'
 UserCredentialDeviceManager = require './src/models/user-credential-device-manager'
-ProxyRequestModel = require './src/proxy-request-model'
-LittleBitsOptionsBuilder = require './src/little-bits-options-builder'
+ProxyRequestModel = require './src/models/proxy-request-model'
+LittleBitsOptionsBuilder = require './src/models/little-bits-options-builder'
 
 meshbluConfig = new MeshbluConfig().toJSON()
 
@@ -48,26 +48,11 @@ meshbluAuthorizer = meshbluAuth
   port: meshbluConfig.port
 
 app.post '/api/messages', meshbluAuthorizer, (req, res) ->
-  proxyRequest = new ProxyRequestModel meshbluOptions, LittleBitsOptionsBuilder
+  proxyRequest = new ProxyRequestModel meshbluConfig, LittleBitsOptionsBuilder
   proxyRequest.sendMessage req.body, (error, message) =>
     return res.status(422).send(error.message) if error?
 
-    res.send message
-
-app.post '/api/proxy', meshbluAuthorizer, (req, res) ->
-  payload = req.body.payload
-  parentDevice = payload.parentDevice
-  uri = payload.uri
-  qs  = payload.qs
-  method = payload.method
-  postBody = payload.body ? false
-  headers = payload.headers ? {}
-  signature = payload.signature
-  options  = payload.options ? {}
-  respondTo = payload.respondTo
-  responseParams = payload.responseParams ? {}
-  json = payload.json
-
+    res.status(201).send message
 
 app.get '/api/authorize', (req, res) ->
   res.sendFile 'index.html', root: __dirname + '/public'
