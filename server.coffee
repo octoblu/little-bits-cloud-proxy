@@ -1,4 +1,5 @@
 _ = require 'lodash'
+url = require 'url'
 cors = require 'cors'
 async = require 'async'
 morgan = require 'morgan'
@@ -16,8 +17,7 @@ OAuthProxyController = require './src/oauth-proxy-controller'
 MeshbluConfig = require 'meshblu-config'
 MeshbluHttp = require 'meshblu-http'
 debug = require('debug')('little-bits-cloud-proxy')
-CredentialDeviceManager = require './src/models/credential-device-manager'
-UserCredentialDeviceManager = require './src/models/user-credential-device-manager'
+CredentialManager = require './src/models/credential-manager'
 ProxyRequestModel = require './src/models/proxy-request-model'
 LittleBitsOptionsBuilder = require './src/models/little-bits-options-builder'
 
@@ -47,6 +47,15 @@ meshbluAuthorizer = meshbluAuth
   server: meshbluConfig.server
   port: meshbluConfig.port
 
+
+options =
+  messageSchemaUrl: 'https://raw.githubusercontent.com/octoblu/little-bits-cloud-proxy/master/schemas/message-schema.json'
+  messageFormSchemaUrl: 'https://raw.githubusercontent.com/octoblu/little-bits-cloud-proxy/master/schemas/message-form-schema.json'
+  logo: 'https://cdn.octoblu.com/icons/devices/little-bits-cloud.svg'
+  name: 'littleBits Cloud'
+
+credentialManager = new CredentialManager options, meshbluConfig
+
 app.post '/api/messages', meshbluAuthorizer, (req, res) ->
   proxyRequest = new ProxyRequestModel meshbluConfig, LittleBitsOptionsBuilder
   proxyRequest.sendMessage req.body, (error, message) =>
@@ -59,36 +68,18 @@ app.get '/api/authorize', (req, res) ->
   res.sendFile 'index.html', root: __dirname + '/public'
 
 app.post '/api/callback', (req, res) ->
-  debug 'meshbluConfig', meshbluConfig
-  meshbluHttp = new MeshbluHttp meshbluConfig
-  privateKey = meshbluHttp.setPrivateKey meshbluConfig.privateKey
-  userUuid = req.session.userUuid
-  clientID = req.body.deviceId
-  clientSecret = privateKey.encrypt req.body.token, 'base64'
+  credentialManager.findOrCreate req.session.userUuid, req.body.clientId, req.body.clientSecret, (error, result) =>
+    return res.status(422).send(error.message) if error?
 
-  options =
-    messageSchemaUrl: 'https://raw.githubusercontent.com/octoblu/little-bits-cloud-proxy/master/schemas/message-schema.json'
-    messageFormSchemaUrl: 'https://raw.githubusercontent.com/octoblu/little-bits-cloud-proxy/master/schemas/message-form-schema.json'
-    logo: 'https://cdn.octoblu.com/icons/devices/little-bits-cloud.svg'
-    name: 'littleBits Cloud'
+    if req.session.callbackUrl?
+      callbackUrl = url.parse req.session.callbackUrl, true
+      delete callbackUrl.search
+      callbackUrl.query.uuid = result.uuid
+      callbackUrl.query.creds_uuid = result.creds.uuid
+      callbackUrl.query.creds_token = result.creds.token
+      return res.redirect url.format(callbackUrl)
 
-  credentialDeviceManager = new CredentialDeviceManager _.extend {}, meshbluConfig, options, type: 'channel-credentials:little-bits-cloud'
-  userCredentialDeviceManager = new UserCredentialDeviceManager _.extend {}, _.extend {}, meshbluConfig, options, type: 'device-credentials:little-bits-cloud'
-
-  # verify credentials are OK!!!
-
-  credentialDeviceManager.findOrCreate clientID, meshbluConfig.uuid, (error, device) =>
-    return res.status(500).send message: 'Unable to find or create device' if error?
-
-    userCredentialDeviceManager.findOrCreate device.uuid, userUuid, meshbluConfig.uuid, (error, userDevice) =>
-      return res.status(500).send message: 'Unable to find or create device' if error?
-
-      credentialDeviceManager.addUserDevice device.uuid, userDevice.uuid
-      credentialDeviceManager.updateClientSecret device.uuid, clientSecret
-
-      return res.redirect req.session.callbackUrl if req.session.callbackUrl?
-
-      res.status(201).send uuid: userDevice.uuid
+    res.status(201).send result
 
 app.get '/', (req, res) ->
   res.status(422).send message: 'UUID is required'

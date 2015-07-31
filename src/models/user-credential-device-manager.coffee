@@ -1,13 +1,8 @@
 _ = require 'lodash'
 
 class UserCredentialDeviceManager
-  constructor: (@options, dependencies={}) ->
-    @type = @options.type
-    @logo = @options.logo
-    @name = @options.name
-    @messageSchemaUrl = @options.messageSchemaUrl
-    @messageFormSchemaUrl = @options.messageFormSchemaUrl
-
+  constructor: (options, @meshbluConfig, dependencies={}) ->
+    {@type, @logo, @name, @messageSchemaUrl, @messageFormSchemaUrl} = options
     @MeshbluHttp = dependencies.MeshbluHttp ? require 'meshblu-http'
 
   create: (params, callback=->) =>
@@ -25,12 +20,12 @@ class UserCredentialDeviceManager
       meshblu:
         messageForward: [params.parentUuid]
 
-    meshbluHttp = new @MeshbluHttp @options
+    meshbluHttp = new @MeshbluHttp @meshbluConfig
     meshbluHttp.register options, (error, result) =>
       callback error, result
 
   findOrCreate: (parentUuid, owner, proxyUuid, callback=->) =>
-    meshbluHttp = new @MeshbluHttp @options
+    meshbluHttp = new @MeshbluHttp @meshbluConfig
     meshbluHttp.devices type: @type, parentDevice: parentUuid, owner: owner, (error, result) =>
       return callback error if error? && error?.message != 'Devices not found'
       if _.isEmpty result?.devices
