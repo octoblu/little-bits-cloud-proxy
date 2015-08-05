@@ -49,8 +49,7 @@ class ProxyRequestModel
     debug 'sendMeshbluMessage', forwardedFor, body
     message =
       devices: [_.first forwardedFor]
-      meshblu:
-        forwardedFor: forwardedFor
+      forwardedFor: forwardedFor
       payload:
         body: body
 
